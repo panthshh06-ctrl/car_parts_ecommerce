@@ -1,0 +1,72 @@
+<style>
+  .admin-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:1rem; }
+  .admin-option { background:#0b0c10; border:2px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color .15s ease,transform .15s ease; }
+  .admin-option:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .admin-option.selected { border-color:var(--selected-border); }
+  .admin-title { display:flex; justify-content:space-between; gap:.75rem; align-items:center; padding:1rem 1.1rem; color:#f4f4f5; border-bottom:1px solid #292b35; }
+  .admin-title strong { font-size:.95rem; }
+  .admin-title span { font-size:.68rem; color:#a1a1aa; }
+  .admin-shell { display:flex; min-height:390px; color:#f4f4f5; background:#090a0f; font:10px system-ui,sans-serif; }
+  .admin-side { width:94px; flex-shrink:0; background:#11131a; border-right:1px solid #252733; padding:12px 7px; }
+  .admin-brand { color:#f4f4f5; font-size:9px; font-weight:800; letter-spacing:.08em; margin:1px 5px 15px; }
+  .admin-nav { color:#9699a6; padding:7px 7px; margin:2px 0; border-radius:6px; }
+  .admin-nav.active { background:#202839; color:#8db7ff; }
+  .admin-main { flex:1; min-width:0; padding:13px; }
+  .admin-top { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:12px; }
+  .admin-top strong { font-size:12px; }
+  .admin-pill { color:#a1a1aa; border:1px solid #31333e; border-radius:20px; padding:4px 7px; white-space:nowrap; }
+  .admin-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:9px; }
+  .admin-metric,.admin-panel { background:#13151d; border:1px solid #282a35; border-radius:7px; padding:9px; }
+  .admin-metric span,.admin-panel small { display:block; color:#9295a2; font-size:8px; }
+  .admin-metric b { display:block; margin:4px 0 2px; font-size:13px; }
+  .admin-green { color:#60d6a0; }
+  .admin-lower { display:grid; grid-template-columns:1.15fr .85fr; gap:7px; }
+  .admin-panel h4 { margin:0 0 8px; color:#e4e4e7; font-size:9px; }
+  .admin-row { display:flex; justify-content:space-between; gap:5px; padding:6px 0; border-top:1px solid #282a35; color:#c7c8ce; font-size:8px; }
+  .admin-status { color:#f4c86a; white-space:nowrap; }
+  .admin-stock { color:#f4c86a; }
+  .admin-chart { display:flex; align-items:end; gap:5px; height:54px; padding-top:5px; }
+  .admin-chart i { flex:1; background:linear-gradient(#4b91ff,#315fc1); border-radius:3px 3px 0 0; }
+  .admin-topnav { display:flex; gap:9px; border-bottom:1px solid #282a35; padding:0 0 9px; margin-bottom:12px; color:#a1a1aa; }
+  .admin-topnav b { color:#8db7ff; }
+  @media(max-width:500px) { .admin-options { grid-template-columns:1fr; } .admin-shell { min-height:350px; } .admin-side { width:75px; } .admin-main { padding:9px; } .admin-lower { grid-template-columns:1fr; } }
+</style>
+
+<h2>Which admin layout should guide the page?</h2>
+<p class="subtitle">Both concepts include sales/order metrics, recent orders, and low-stock alerts. Choose the navigation style you prefer.</p>
+
+<div class="admin-options">
+  <div class="admin-option" data-choice="sidebar" onclick="toggleSelect(this)">
+    <div class="admin-title"><strong>A · Persistent side navigation</strong><span>Recommended</span></div>
+    <div class="admin-shell">
+      <aside class="admin-side">
+        <div class="admin-brand">APEX / ADMIN</div>
+        <div class="admin-nav active">◧ Overview</div><div class="admin-nav">▦ Products</div><div class="admin-nav">◷ Orders</div><div class="admin-nav">♧ Customers</div>
+      </aside>
+      <main class="admin-main">
+        <div class="admin-top"><strong>Overview</strong><span class="admin-pill">Last 30 days⌄</span></div>
+        <div class="admin-metrics"><div class="admin-metric"><span>REVENUE</span><b>$24.8k</b><span class="admin-green">↑ 12.4%</span></div><div class="admin-metric"><span>ORDERS</span><b>142</b><span class="admin-green">↑ 8.2%</span></div><div class="admin-metric"><span>LOW STOCK</span><b class="admin-stock">6</b><span>Needs attention</span></div></div>
+        <div class="admin-lower">
+          <section class="admin-panel"><h4>Recent orders</h4><div class="admin-row"><span>#AP-1042 · Alex M.</span><span class="admin-status">Processing</span></div><div class="admin-row"><span>#AP-1041 · Jordan K.</span><span class="admin-status">Pending</span></div><div class="admin-row"><span>#AP-1040 · Sam R.</span><span class="admin-status">Shipped</span></div><div class="admin-row"><span>#AP-1039 · Taylor W.</span><span class="admin-status">Processing</span></div></section>
+          <section class="admin-panel"><h4>Revenue trend</h4><small>Sales this month</small><div class="admin-chart"><i style="height:35%"></i><i style="height:52%"></i><i style="height:42%"></i><i style="height:74%"></i><i style="height:58%"></i><i style="height:88%"></i><i style="height:68%"></i><i style="height:100%"></i></div><div class="admin-row"><span>Top alert</span><span class="admin-stock">6 SKUs</span></div></section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="admin-option" data-choice="topnav" onclick="toggleSelect(this)">
+    <div class="admin-title"><strong>B · Compact top navigation</strong><span>More horizontal space</span></div>
+    <div class="admin-shell">
+      <main class="admin-main">
+        <div class="admin-top"><div class="admin-brand">APEX / ADMIN</div><span class="admin-pill">Apex Admin⌄</span></div>
+        <nav class="admin-topnav"><b>Overview</b><span>Products</span><span>Orders</span><span>Customers</span></nav>
+        <div class="admin-top"><strong>Store overview</strong><span class="admin-pill">Last 30 days⌄</span></div>
+        <div class="admin-metrics"><div class="admin-metric"><span>REVENUE</span><b>$24.8k</b><span class="admin-green">↑ 12.4%</span></div><div class="admin-metric"><span>ORDERS</span><b>142</b><span class="admin-green">↑ 8.2%</span></div><div class="admin-metric"><span>LOW STOCK</span><b class="admin-stock">6</b><span>Needs attention</span></div></div>
+        <div class="admin-lower">
+          <section class="admin-panel"><h4>Recent orders</h4><div class="admin-row"><span>#AP-1042 · Alex M.</span><span class="admin-status">Processing</span></div><div class="admin-row"><span>#AP-1041 · Jordan K.</span><span class="admin-status">Pending</span></div><div class="admin-row"><span>#AP-1040 · Sam R.</span><span class="admin-status">Shipped</span></div><div class="admin-row"><span>#AP-1039 · Taylor W.</span><span class="admin-status">Processing</span></div></section>
+          <section class="admin-panel"><h4>Revenue trend</h4><small>Sales this month</small><div class="admin-chart"><i style="height:35%"></i><i style="height:52%"></i><i style="height:42%"></i><i style="height:74%"></i><i style="height:58%"></i><i style="height:88%"></i><i style="height:68%"></i><i style="height:100%"></i></div><div class="admin-row"><span>Top alert</span><span class="admin-stock">6 SKUs</span></div></section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,268 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  role         String        @default("CUSTOMER")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  garage       UserGarage[]
+  orders       Order[]
+  cart         CartItem[]
+  wishlist     WishlistItem[]
+  reviews      Review[]
+}
+
+model VehicleManufacturer {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  logoUrl   String?
+  country   String?
+  models    VehicleModel[]
+}
+
+model VehicleModel {
+  id             String              @id @default(cuid())
+  name           String
+  manufacturerId String
+  manufacturer   VehicleManufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+  generations    VehicleGeneration[]
+}
+
+model VehicleGeneration {
+  id           String            @id @default(cuid())
+  name         String
+  modelId      String
+  model        VehicleModel      @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  startYear    Int
+  endYear      Int?
+  variants     VehicleVariant[]
+}
+
+model VehicleVariant {
+  id              String             @id @default(cuid())
+  name            String
+  generationId    String
+  generation      VehicleGeneration  @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  bodyType        String
+  driveType       String
+  engine          String
+  oemWheelDiam    Float
+  oemWheelWidth   Float
+  oemTyreSize     String
+  boltPattern     String
+  centreBore      Float
+  oemOffset       Int
+  minOffset       Int
+  maxOffset       Int
+  minWidth        Float
+  maxWidth        Float
+  fitments        VehicleFitment[]
+  garageEntries   UserGarage[]
+  galleryBuilds   GalleryBuild[]
+}
+
+model VehicleFitment {
+  id                String         @id @default(cuid())
+  variantId         String
+  variant           VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  notes             String?
+  recommendedOffset Int
+  flushOffset       Int
+  aggressiveOffset  Int
+}
+
+model WheelBrand {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  logoUrl String?
+  wheels  Wheel[]
+}
+
+model Wheel {
+  id             String          @id @default(cuid())
+  brandId        String
+  brand          WheelBrand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  modelName      String
+  description    String?
+  construction   String
+  material       String
+  imageUrl       String
+  galleryImages  String
+  variants       WheelVariant[]
+  reviews        Review[]
+  wishlistItems  WishlistItem[]
+}
+
+model WheelVariant {
+  id              String                   @id @default(cuid())
+  wheelId         String
+  wheel           Wheel                    @relation(fields: [wheelId], references: [id], onDelete: Cascade)
+  diameter        Float
+  width           Float
+  offset          Int
+  boltPattern     String
+  centreBore      Float
+  finish          String
+  color           String
+  weightKg        Float
+  loadRatingKg    Int
+  price           Float
+  stockQty        Int
+  sku             String                   @unique
+  compatibilities WheelTyreCompatibility[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+}
+
+model TyreBrand {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  logoUrl String?
+  tyres   Tyre[]
+}
+
+model Tyre {
+  id               String          @id @default(cuid())
+  brandId          String
+  brand            TyreBrand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  modelName        String
+  description      String?
+  category         String
+  season           String
+  imageUrl         String
+  variants         TyreVariant[]
+  reviews          Review[]
+  wishlistItems    WishlistItem[]
+}
+
+model TyreVariant {
+  id              String                   @id @default(cuid())
+  tyreId          String
+  tyre            Tyre                     @relation(fields: [tyreId], references: [id], onDelete: Cascade)
+  width           Int
+  aspectRatio     Int
+  rimDiameter     Float
+  loadIndex       Int
+  speedRating     String
+  wetGrip         String
+  dryPerformance  Float
+  comfortRating   Float
+  treadwear       Int
+  price           Float
+  stockQty        Int
+  sku             String                   @unique
+  compatibilities WheelTyreCompatibility[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+}
+
+model WheelTyreCompatibility {
+  id             String       @id @default(cuid())
+  wheelVariantId String
+  wheelVariant   WheelVariant @relation(fields: [wheelVariantId], references: [id], onDelete: Cascade)
+  tyreVariantId  String
+  tyreVariant    TyreVariant  @relation(fields: [tyreVariantId], references: [id], onDelete: Cascade)
+  isRecommended  Boolean      @default(true)
+}
+
+model GalleryBuild {
+  id            String         @id @default(cuid())
+  title         String
+  carDetails    String
+  variantId     String
+  variant       VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  imageUrl      String
+  wheelSetup    String
+  tyreSetup     String
+  suspension    String
+  stance        String
+  ownerName     String
+  likesCount    Int            @default(42)
+  createdAt     DateTime       @default(now())
+}
+
+model UserGarage {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  nickname  String?
+  isPrimary Boolean        @default(false)
+  createdAt DateTime       @default(now())
+}
+
+model CartItem {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  wheelVariantId  String?
+  wheelVariant    WheelVariant? @relation(fields: [wheelVariantId], references: [id], onDelete: SetNull)
+  tyreVariantId   String?
+  tyreVariant     TyreVariant?  @relation(fields: [tyreVariantId], references: [id], onDelete: SetNull)
+  quantity        Int           @default(1)
+  mountedBalanced Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wheelId   String?
+  wheel     Wheel?   @relation(fields: [wheelId], references: [id], onDelete: SetNull)
+  tyreId    String?
+  tyre      Tyre?    @relation(fields: [tyreId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalAmount     Float
+  status          String      @default("PENDING")
+  paymentStatus   String      @default("PAID")
+  shippingAddress String
+  contactPhone    String
+  trackingNumber  String?
+  items           OrderItem[]
+  createdAt       DateTime      @default(now())
+}
+
+model OrderItem {
+  id              String        @id @default(cuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type            String
+  wheelVariantId  String?
+  wheelVariant    WheelVariant? @relation(fields: [wheelVariantId], references: [id], onDelete: SetNull)
+  tyreVariantId   String?
+  tyreVariant     TyreVariant?  @relation(fields: [tyreVariantId], references: [id], onDelete: SetNull)
+  quantity        Int
+  unitPrice       Float
+  mountedBalanced Boolean       @default(true)
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wheelId   String?
+  wheel     Wheel?   @relation(fields: [wheelId], references: [id], onDelete: Cascade)
+  tyreId    String?
+  tyre      Tyre?    @relation(fields: [tyreId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+}
